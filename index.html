@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CarbonTrace — Know Your Impact</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <!-- PROFILE SCREEN OVERLAY -->
+  <div id="profileOverlay" class="profile-overlay">
+    <div class="profile-modal">
+      <div class="profile-logo"><span class="nav-icon">◈</span> CarbonTrace</div>
+      <h2 class="profile-title">Who's calculating?</h2>
+      <p class="profile-sub">Pick your profile or add a new one. Each person's data is saved separately.</p>
+
+      <div class="profile-list" id="profileList"></div>
+
+      <div class="profile-add" id="profileAddSection">
+        <input type="text" id="newProfileName" class="profile-input" placeholder="Enter your name…" maxlength="30" />
+        <button class="cta-btn" onclick="createProfile()">Add Profile →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <span class="nav-icon">◈</span>
+      <span>CarbonTrace</span>
+    </div>
+    <div class="nav-links">
+      <a href="#calculator" class="nav-link">Calculate</a>
+      <a href="#dashboard" class="nav-link">Dashboard</a>
+      <a href="#tips" class="nav-link">Actions</a>
+      <button class="nav-profile-btn" onclick="openProfileOverlay()" id="navProfileBtn">
+        <span class="nav-profile-avatar" id="navAvatar">?</span>
+        <span id="navProfileName">—</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Carbon Footprint Tracker</div>
+      <h1 class="hero-headline">
+        Your choices.<br />
+        <span class="hero-accent">Their weight.</span>
+      </h1>
+      <p class="hero-sub">Measure the carbon impact of how you live — travel, food, energy, shopping — and get a personalised plan to cut it down.</p>
+      <a href="#calculator" class="cta-btn">Start Calculating →</a>
+    </div>
+    <div class="hero-meter-wrap">
+      <div class="hero-meter">
+        <div class="meter-ring">
+          <svg viewBox="0 0 160 160" class="ring-svg">
+            <circle cx="80" cy="80" r="68" class="ring-track"/>
+            <circle cx="80" cy="80" r="68" class="ring-fill" id="heroRing"/>
+          </svg>
+          <div class="meter-center">
+            <span class="meter-num" id="heroNum">0</span>
+            <span class="meter-unit">t CO₂/yr</span>
+          </div>
+        </div>
+        <div class="meter-legend">
+          <div class="legend-row"><span class="dot green"></span>Low  &lt;4t</div>
+          <div class="legend-row"><span class="dot yellow"></span>Avg  7–10t</div>
+          <div class="legend-row"><span class="dot red"></span>High &gt;14t</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section class="section" id="calculator">
+    <div class="section-header">
+      <h2>Calculate Your Footprint</h2>
+      <p>Answer a few questions about your daily life. We'll do the maths.</p>
+    </div>
+
+    <div class="calc-grid">
+      <!-- Transport -->
+      <div class="calc-card" data-category="transport">
+        <div class="card-icon">✈</div>
+        <h3>Transport</h3>
+        <div class="field-group">
+          <label>Car travel per week (km)</label>
+          <input type="range" min="0" max="1000" value="150" id="car" oninput="updateCalc()" />
+          <span class="range-val" id="carVal">150 km</span>
+        </div>
+        <div class="field-group">
+          <label>Flights per year</label>
+          <input type="number" min="0" max="50" value="2" id="flights" oninput="updateCalc()" class="num-input"/>
+        </div>
+        <div class="field-group">
+          <label>Public transport use</label>
+          <select id="transit" onchange="updateCalc()">
+            <option value="0">Never</option>
+            <option value="1" selected>Sometimes</option>
+            <option value="2">Often</option>
+            <option value="3">Always</option>
+          </select>
+        </div>
+        <div class="card-score">
+          <span class="score-label">Transport CO₂</span>
+          <span class="score-val" id="transportScore">—</span>
+        </div>
+      </div>
+
+      <!-- Food -->
+      <div class="calc-card" data-category="food">
+        <div class="card-icon">🥗</div>
+        <h3>Food & Diet</h3>
+        <div class="field-group">
+          <label>Diet type</label>
+          <select id="diet" onchange="updateCalc()">
+            <option value="vegan">Vegan</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="flexitarian" selected>Flexitarian</option>
+            <option value="meat_some">Meat sometimes</option>
+            <option value="meat_heavy">Meat daily</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Local / seasonal food (%)</label>
+          <input type="range" min="0" max="100" value="30" id="local" oninput="updateCalc()" />
+          <span class="range-val" id="localVal">30%</span>
+        </div>
+        <div class="field-group">
+          <label>Food waste level</label>
+          <select id="waste" onchange="updateCalc()">
+            <option value="low">Very little</option>
+            <option value="medium" selected>Some</option>
+            <option value="high">A lot</option>
+          </select>
+        </div>
+        <div class="card-score">
+          <span class="score-label">Food CO₂</span>
+          <span class="score-val" id="foodScore">—</span>
+        </div>
+      </div>
+
+      <!-- Energy -->
+      <div class="calc-card" data-category="energy">
+        <div class="card-icon">⚡</div>
+        <h3>Home Energy</h3>
+        <div class="field-group">
+          <label>Monthly electricity bill (₹)</label>
+          <input type="number" min="0" max="10000" value="1500" id="electricity" oninput="updateCalc()" class="num-input"/>
+        </div>
+        <div class="field-group">
+          <label>Heating type</label>
+          <select id="heating" onchange="updateCalc()">
+            <option value="electric">Electric</option>
+            <option value="gas" selected>Gas / LPG</option>
+            <option value="renewable">Renewable</option>
+            <option value="none">None needed</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Solar / green energy?</label>
+          <select id="solar" onchange="updateCalc()">
+            <option value="no" selected>No</option>
+            <option value="partial">Partial</option>
+            <option value="yes">Yes, fully</option>
+          </select>
+        </div>
+        <div class="card-score">
+          <span class="score-label">Energy CO₂</span>
+          <span class="score-val" id="energyScore">—</span>
+        </div>
+      </div>
+
+      <!-- Lifestyle -->
+      <div class="calc-card" data-category="lifestyle">
+        <div class="card-icon">🛍</div>
+        <h3>Lifestyle & Shopping</h3>
+        <div class="field-group">
+          <label>New clothes purchases / year</label>
+          <input type="range" min="0" max="100" value="20" id="clothes" oninput="updateCalc()" />
+          <span class="range-val" id="clothesVal">20 items</span>
+        </div>
+        <div class="field-group">
+          <label>Electronics purchases / year</label>
+          <input type="number" min="0" max="20" value="2" id="electronics" oninput="updateCalc()" class="num-input"/>
+        </div>
+        <div class="field-group">
+          <label>Second-hand / repair tendency</label>
+          <select id="secondhand" onchange="updateCalc()">
+            <option value="never">Never</option>
+            <option value="sometimes" selected>Sometimes</option>
+            <option value="often">Often</option>
+          </select>
+        </div>
+        <div class="card-score">
+          <span class="score-label">Lifestyle CO₂</span>
+          <span class="score-val" id="lifestyleScore">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-bar">
+      <div class="total-info">
+        <span class="total-label">Your Annual Footprint</span>
+        <span class="total-num" id="totalFootprint">0.0 t CO₂</span>
+      </div>
+      <div class="total-compare">
+        <div class="compare-item">
+          <span class="compare-num" id="vsIndia">—</span>
+          <span class="compare-label">vs India avg (1.9t)</span>
+        </div>
+        <div class="compare-item">
+          <span class="compare-num" id="vsWorld">—</span>
+          <span class="compare-label">vs Global avg (4.7t)</span>
+        </div>
+      </div>
+      <button class="cta-btn" onclick="showDashboard()">See My Dashboard →</button>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="section" id="dashboard">
+    <div class="section-header">
+      <h2>Your Carbon Dashboard</h2>
+      <p>A breakdown of where your emissions come from.</p>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dash-card big">
+        <h3>Emissions by Category</h3>
+        <div class="bar-chart" id="barChart"></div>
+      </div>
+
+      <div class="dash-card">
+        <h3>Global Context</h3>
+        <div class="context-list" id="contextList">
+          <div class="context-row">
+            <span>🇮🇳 India avg</span>
+            <div class="context-bar-wrap"><div class="context-bar" style="width:40%"></div></div>
+            <span class="mono">1.9t</span>
+          </div>
+          <div class="context-row">
+            <span>🌍 World avg</span>
+            <div class="context-bar-wrap"><div class="context-bar" style="width:100%"></div></div>
+            <span class="mono">4.7t</span>
+          </div>
+          <div class="context-row you-row">
+            <span>⬤ You</span>
+            <div class="context-bar-wrap"><div class="context-bar you-bar" id="youContextBar" style="width:0%"></div></div>
+            <span class="mono" id="youContextNum">0t</span>
+          </div>
+          <div class="context-row">
+            <span>🎯 Paris target</span>
+            <div class="context-bar-wrap"><div class="context-bar green-bar" style="width:21%"></div></div>
+            <span class="mono">2.0t</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <h3>Monthly Trend</h3>
+        <div class="trend-chart" id="trendChart"></div>
+      </div>
+
+      <div class="dash-card">
+        <h3>Quick Stats</h3>
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat"><span class="stat-num" id="statTrees">0</span><span class="stat-label">trees to offset</span></div>
+          <div class="stat"><span class="stat-num" id="statFlights">0</span><span class="stat-label">short-haul flights</span></div>
+          <div class="stat"><span class="stat-num" id="statDriving">0</span><span class="stat-label">km of driving</span></div>
+          <div class="stat"><span class="stat-num" id="statKg">0</span><span class="stat-label">kg CO₂ this month</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPS -->
+  <section class="section" id="tips">
+    <div class="section-header">
+      <h2>Your Action Plan</h2>
+      <p>Personalised steps ranked by impact. Tick each one as you commit to it.</p>
+    </div>
+    <div class="tips-container" id="tipsContainer"></div>
+    <div class="pledge-bar" id="pledgeBar">
+      <span class="pledge-text">You've pledged to save <strong id="pledgeSaving">0 kg</strong> CO₂ this year</span>
+      <div class="pledge-prog-wrap"><div class="pledge-prog" id="pledgeProg" style="width:0%"></div></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-brand">◈ CarbonTrace</div>
+    <p>Built for PromptWars Virtual · Main Challenge 3</p>
+    <p class="footer-note">Emission factors sourced from IPCC AR6, Our World in Data, and Carbon Trust guidelines.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
