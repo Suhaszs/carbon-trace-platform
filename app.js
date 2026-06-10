@@ -21,6 +21,11 @@ const EF = {
   secondhand: { never:0, sometimes:-0.1, often:-0.25 },
 };
 
+// ── Security: Input Sanitisation ─────────────────────────────
+function sanitiseName(raw) {
+  return raw.replace(/[<>"'`]/g, "").trim().slice(0, 30);
+}
+
 // ── Avatar colours ────────────────────────────────────────────
 const AVATAR_COLORS = [
   "#a8ff3e","#5b8af4","#f4c542","#f48c5b",
@@ -92,20 +97,28 @@ function renderProfileList() {
       ? new Date(p.lastSaved).toLocaleDateString("en-IN", { day:"numeric", month:"short" })
       : "Not saved yet";
     return `
-      <div class="profile-item" onclick="selectProfile('${id}')">
+      <div class="profile-item" data-profile-id="${id}">
         <div class="profile-avatar" style="background:${color}">${initial}</div>
         <div class="profile-item-info">
           <div class="profile-item-name">${p.name}</div>
           <div class="profile-item-meta">${total} t CO₂/yr · last saved ${date}</div>
         </div>
-        <button class="profile-item-delete" onclick="deleteProfile(event,'${id}')" title="Delete">✕</button>
+        <button class="profile-item-delete" data-delete-id="${id}" title="Delete">✕</button>
       </div>`;
   }).join("");
+
+  // Wire clicks via event delegation (CSP-safe)
+  list.querySelectorAll(".profile-item").forEach(item => {
+    item.addEventListener("click", () => selectProfile(item.dataset.profileId));
+  });
+  list.querySelectorAll(".profile-item-delete").forEach(btn => {
+    btn.addEventListener("click", e => { e.stopPropagation(); deleteProfile(e, btn.dataset.deleteId); });
+  });
 }
 
 function createProfile() {
   const input = document.getElementById("newProfileName");
-  const name = input.value.trim();
+  const name = sanitiseName(input.value);
   if (!name) { input.focus(); return; }
 
   const profiles = loadProfiles();
@@ -404,7 +417,7 @@ function updateTips() {
   container.innerHTML = tipsData.map(tip => {
     const isChecked = checked.has(tip.id);
     const impactLabel = tip.impact==="high"?"🔥 High impact":tip.impact==="medium"?"⚡ Medium impact":"🌱 Low impact";
-    return `<div class="tip-card ${isChecked?"checked":""}" data-id="${tip.id}" onclick="toggleTip(this)">
+    return `<div class="tip-card ${isChecked?"checked":""}" data-id="${tip.id}">
       <div class="tip-check">${isChecked?"✓":""}</div>
       <div class="tip-body">
         <div class="tip-title">${tip.title}</div>
@@ -413,6 +426,11 @@ function updateTips() {
       </div>
     </div>`;
   }).join("");
+
+  // Wire tip clicks (CSP-safe)
+  container.querySelectorAll(".tip-card").forEach(card => {
+    card.addEventListener("click", () => toggleTip(card));
+  });
 
   recalcPledge();
 }
@@ -445,6 +463,21 @@ document.addEventListener("keydown", e => {
 
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+
+  // Wire calculator inputs
+  const calcInputs = ["car","flights","transit","diet","local","waste",
+                      "electricity","heating","solar","clothes","electronics","secondhand"];
+  calcInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(el.tagName === "SELECT" ? "change" : "input", updateCalc);
+  });
+
+  // Wire buttons
+  document.getElementById("addProfileBtn")?.addEventListener("click", createProfile);
+  document.getElementById("navProfileBtn")?.addEventListener("click", openProfileOverlay);
+  document.getElementById("dashboardBtn")?.addEventListener("click", showDashboard);
+
+  // Profile / load
   const activeId = getActiveId();
   const profiles = loadProfiles();
 
@@ -454,14 +487,15 @@ document.addEventListener("DOMContentLoaded", () => {
     closeProfileOverlay();
   } else {
     openProfileOverlay();
-    updateCalc(); // initialise the ring even before profile is chosen
+    updateCalc();
   }
 
+  // Smooth scroll for nav links
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener("click", e => {
       e.preventDefault();
       const target = document.querySelector(link.getAttribute("href"));
-      if (target) target.scrollIntoView({ behavior:"smooth" });
+      if (target) target.scrollIntoView({ behavior: "smooth" });
     });
   });
 });

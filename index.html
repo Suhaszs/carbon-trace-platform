@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none';" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta name="referrer" content="no-referrer" />
   <title>CarbonTrace — Know Your Impact</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -21,7 +26,7 @@
 
       <div class="profile-add" id="profileAddSection">
         <input type="text" id="newProfileName" class="profile-input" placeholder="Enter your name…" maxlength="30" />
-        <button class="cta-btn" onclick="createProfile()">Add Profile →</button>
+        <button class="cta-btn" id="addProfileBtn">Add Profile →</button>
       </div>
     </div>
   </div>
@@ -36,7 +41,7 @@
       <a href="#calculator" class="nav-link">Calculate</a>
       <a href="#dashboard" class="nav-link">Dashboard</a>
       <a href="#tips" class="nav-link">Actions</a>
-      <button class="nav-profile-btn" onclick="openProfileOverlay()" id="navProfileBtn">
+      <button class="nav-profile-btn" id="navProfileBtn">
         <span class="nav-profile-avatar" id="navAvatar">?</span>
         <span id="navProfileName">—</span>
       </button>
@@ -90,16 +95,16 @@
         <h3>Transport</h3>
         <div class="field-group">
           <label>Car travel per week (km)</label>
-          <input type="range" min="0" max="1000" value="150" id="car" oninput="updateCalc()" />
+          <input type="range" min="0" max="1000" value="150" id="car" />
           <span class="range-val" id="carVal">150 km</span>
         </div>
         <div class="field-group">
           <label>Flights per year</label>
-          <input type="number" min="0" max="50" value="2" id="flights" oninput="updateCalc()" class="num-input"/>
+          <input type="number" min="0" max="50" value="2" id="flights" class="num-input"/>
         </div>
         <div class="field-group">
           <label>Public transport use</label>
-          <select id="transit" onchange="updateCalc()">
+          <select id="transit">
             <option value="0">Never</option>
             <option value="1" selected>Sometimes</option>
             <option value="2">Often</option>
@@ -118,7 +123,7 @@
         <h3>Food & Diet</h3>
         <div class="field-group">
           <label>Diet type</label>
-          <select id="diet" onchange="updateCalc()">
+          <select id="diet">
             <option value="vegan">Vegan</option>
             <option value="vegetarian">Vegetarian</option>
             <option value="flexitarian" selected>Flexitarian</option>
@@ -128,12 +133,12 @@
         </div>
         <div class="field-group">
           <label>Local / seasonal food (%)</label>
-          <input type="range" min="0" max="100" value="30" id="local" oninput="updateCalc()" />
+          <input type="range" min="0" max="100" value="30" id="local" />
           <span class="range-val" id="localVal">30%</span>
         </div>
         <div class="field-group">
           <label>Food waste level</label>
-          <select id="waste" onchange="updateCalc()">
+          <select id="waste">
             <option value="low">Very little</option>
             <option value="medium" selected>Some</option>
             <option value="high">A lot</option>
@@ -151,11 +156,11 @@
         <h3>Home Energy</h3>
         <div class="field-group">
           <label>Monthly electricity bill (₹)</label>
-          <input type="number" min="0" max="10000" value="1500" id="electricity" oninput="updateCalc()" class="num-input"/>
+          <input type="number" min="0" max="10000" value="1500" id="electricity" class="num-input"/>
         </div>
         <div class="field-group">
           <label>Heating type</label>
-          <select id="heating" onchange="updateCalc()">
+          <select id="heating">
             <option value="electric">Electric</option>
             <option value="gas" selected>Gas / LPG</option>
             <option value="renewable">Renewable</option>
@@ -164,7 +169,7 @@
         </div>
         <div class="field-group">
           <label>Solar / green energy?</label>
-          <select id="solar" onchange="updateCalc()">
+          <select id="solar">
             <option value="no" selected>No</option>
             <option value="partial">Partial</option>
             <option value="yes">Yes, fully</option>
@@ -182,16 +187,16 @@
         <h3>Lifestyle & Shopping</h3>
         <div class="field-group">
           <label>New clothes purchases / year</label>
-          <input type="range" min="0" max="100" value="20" id="clothes" oninput="updateCalc()" />
+          <input type="range" min="0" max="100" value="20" id="clothes" />
           <span class="range-val" id="clothesVal">20 items</span>
         </div>
         <div class="field-group">
           <label>Electronics purchases / year</label>
-          <input type="number" min="0" max="20" value="2" id="electronics" oninput="updateCalc()" class="num-input"/>
+          <input type="number" min="0" max="20" value="2" id="electronics" class="num-input"/>
         </div>
         <div class="field-group">
           <label>Second-hand / repair tendency</label>
-          <select id="secondhand" onchange="updateCalc()">
+          <select id="secondhand">
             <option value="never">Never</option>
             <option value="sometimes" selected>Sometimes</option>
             <option value="often">Often</option>
@@ -219,7 +224,7 @@
           <span class="compare-label">vs Global avg (4.7t)</span>
         </div>
       </div>
-      <button class="cta-btn" onclick="showDashboard()">See My Dashboard →</button>
+      <button class="cta-btn" id="dashboardBtn">See My Dashboard →</button>
     </div>
   </section>
 

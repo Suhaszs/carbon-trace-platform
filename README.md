@@ -9,7 +9,9 @@ A smart, personalised carbon footprint tracker that helps individuals understand
 
 ## 🌱 Live Demo
 
-**[→ View Live on Netifly](#)** *(https://carbontrace-platform.netlify.app/)*
+
+**[→ View Live on Netlify](https://carbontrace-platform.netlify.app/)**
+
 
 ---
 
@@ -57,10 +59,9 @@ Tips are dynamically filtered based on which inputs are most impactful for the s
 ```
 carbon-footprint-platform/
 ├── index.html          # Main app (single-page)
-├── 
-│  └── style.css       # Full design system — dark theme, lime accent
-├── 
-│  └── app.js          # Calculation logic, dashboard rendering, tips engine
+├──  style.css       # Full design system — dark theme, lime accent
+├──  app.js          # Calculation logic, dashboard rendering, tips engine
+|__  calc.test.js       #Unit Test Suite  Tests: Transport, Food, Energy, Lifestyle, Security
 └── README.md
 ```
 
@@ -99,13 +100,34 @@ npx live-server
 
 ---
 
-## 🧪 Code Quality
+## 🧪 Running Tests
 
-- **Zero dependencies** — pure HTML, CSS, JavaScript
-- **Separation of concerns**: HTML structure, CSS design system, JS logic are cleanly separated
-- **Accessible**: `<label>` elements linked to inputs, keyboard navigable, ARIA-friendly
-- **Performant**: No frameworks, no bundler — loads in under 1 second
-- **Maintainable**: Emission factors are isolated in a single `EF` constant object for easy updates
+No dependencies needed — pure Node.js:
+
+```bash
+node calc.test.js
+```
+
+**30 unit tests** covering:
+- Transport emission calculations (5 tests)
+- Food & diet calculations (5 tests)
+- Energy calculations (4 tests)
+- Lifestyle calculations (4 tests)
+- Total footprint accuracy (3 tests)
+- Input sanitisation / XSS prevention (6 tests)
+- Quick stats calculations (3 tests)
+
+---
+
+## 🔒 Security Measures
+
+- **Content Security Policy** (CSP) meta tag — restricts script sources to `'self'` only, blocks inline scripts, disallows form actions and object embeds
+- **X-Content-Type-Options: nosniff** — prevents MIME-type sniffing
+- **X-Frame-Options: DENY** — prevents clickjacking via iframe embedding
+- **No-referrer** policy on all outbound navigation
+- **Input sanitisation** — profile names stripped of `< > " ' \`` characters and truncated to 30 chars, preventing stored XSS
+- **No external API calls** — all data stays in the user's browser (`localStorage`)
+- **Event listeners only** — zero inline `onclick`/`oninput` attributes in HTML
 
 ---
 
