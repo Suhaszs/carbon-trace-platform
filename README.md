@@ -9,7 +9,7 @@ A smart, personalised carbon footprint tracker that helps individuals understand
 
 ## 🌱 Live Demo
 
-**[→ View Live on Vercel](#)** *(replace with your deployed URL after deployment)*
+**[→ View Live on Netifly](#)** *(https://carbontrace-platform.netlify.app/)*
 
 ---
 
@@ -82,10 +82,10 @@ npx live-server
 ## 🌍 Deploying to Vercel (Recommended)
 
 1. Push code to a public GitHub repository
-2. Go to [vercel.com](https://vercel.com) → New Project
+2. Go to [netlify.com](https://www.netlify.com/) → New Project
 3. Import your GitHub repo
 4. Click **Deploy** — no config needed for static sites
-5. Copy your `.vercel.app` URL for submission
+5. Copy your `.netifly.app` URL for submission
 
 ---
 
