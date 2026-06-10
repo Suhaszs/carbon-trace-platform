@@ -79,7 +79,7 @@ npx live-server
 
 ---
 
-## 🌍 Deploying to Vercel (Recommended)
+## 🌍 Deploying to Netlify (Recommended)
 
 1. Push code to a public GitHub repository
 2. Go to [netlify.com](https://www.netlify.com/) → New Project
